@@ -1,35 +1,51 @@
 import React from 'react'
 
+import api from '../../services/api';
 import whatsAppIcon from '../../assets/images/icons/whatsapp.svg'
 
 import './styles.css';
 
-const TeacherItem: React.FC = () => {
+export interface ITeacher {
+  "id": number,
+  "user_id": number,
+  "subject": string,
+  "cost": number,
+  "name": string,
+  "avatar": string;
+  "whatsapp": number;
+  "bio": string;
+}
+
+interface ITeacherItemProps {
+  teacher: ITeacher
+}
+
+const TeacherItem: React.FC<ITeacherItemProps> = ({ teacher }) => {
+  function handleCreateNewConnection(){
+    api.post('connections', {
+      user_id: teacher.user_id
+    })
+  }
+
   return (
     <article className="teacher-item">
       <header>
-        <img src="https://images.unsplash.com/photo-1592060456825-db77a2df7610?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=751&q=80" alt="test"/>
+        <img src={teacher.avatar} alt={teacher.name}/>
 
         <div>
-          <strong>test name</strong>
-          <span>Química</span>
+          <strong>{teacher.name}</strong>
+          <span>{teacher.subject}</span>
         </div>
       </header>
 
-      <p>
-        Lero Lero frasesss
-
-        <br /> <br />
-
-        O incentivo ao avanço tecnológico, assim como o comprometimento entre as equipes possibilita uma melhor visão global do orçamento setorial.
-      </p>
+      <p>{teacher.bio}</p>
 
       <footer>
-        <p>Preço/Hora  <strong>R$ 20,00</strong></p>
-        <button type="button">
+        <p>Preço/Hora <strong>R$ {teacher.cost}</strong></p>
+        <a target="_blank" onClick={handleCreateNewConnection} href={`https://wa.me/${teacher.whatsapp}`}>
           <img src={whatsAppIcon} alt="Whatsapp"/>
           Entrar em contato
-        </button>
+        </a>
       </footer>
     </article>
   )
