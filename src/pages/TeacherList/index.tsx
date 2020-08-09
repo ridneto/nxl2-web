@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, FormEvent, useEffect } from 'react';
 import PageHeader from '../../components/PageHeader';
 import TeacherItem, { ITeacher } from '../../components/TeacherItem';
 import Input from '../../components/Input';
@@ -8,12 +8,23 @@ import api from '../../services/api';
 
 import './styles.css';
 
+interface ISubjectResponse {
+  subjects: string[]
+}
+
+interface ISubjectList{
+  value: string,
+  label: string
+}
+
 const TeacherList: React.FC = () => {
   const [teachers, setTeachers] = useState([])
 
   const [subject, setSubject] = useState('');
   const [week_day, setWeekDay] = useState('');
-  const [time, setTime] = useState('')
+  const [time, setTime] = useState('');
+
+  const [subjectList, setSubjectList] = useState<ISubjectList[]>([]);
 
   async function searchTeachers(e: FormEvent){
     e.preventDefault();
@@ -29,6 +40,25 @@ const TeacherList: React.FC = () => {
     setTeachers(response.data)
   }
 
+  async function populeSubjects(){
+    const { data } = await api.get<ISubjectResponse>('subjects')
+
+    if(data.subjects){
+      const dataSubjects = data.subjects.map(subject => {
+        return {
+          value: subject,
+          label: subject
+        }
+      })
+
+      setSubjectList(dataSubjects)
+    }
+  }
+
+  useEffect(() => {
+    populeSubjects()
+  }, []);
+
   return (
     <div id="page-teacher-list" className="container">
       <PageHeader title="Estes são os proffys disponíveis">
@@ -38,11 +68,7 @@ const TeacherList: React.FC = () => {
             label="Matéria"
             value={subject}
             onChange={e => { setSubject(e.target.value) }}
-            options={[
-              { value: 'Artes', label: 'Artes' },
-              { value: 'Geografia', label: 'Geografia' },
-              { value: 'Matemática', label: 'Matemática' },
-            ]}
+            options={subjectList}
           />
 
           <Select
