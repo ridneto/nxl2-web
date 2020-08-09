@@ -9,10 +9,13 @@ import api from '../../services/api';
 import './styles.css';
 
 interface ISubjectResponse {
-  subjects: string[]
+  subjects: [{
+    ds_subject: string,
+    id_subject: string
+  }]
 }
 
-interface ISubjectList{
+interface ISubjectItemView{
   value: string,
   label: string
 }
@@ -24,7 +27,7 @@ const TeacherList: React.FC = () => {
   const [week_day, setWeekDay] = useState('');
   const [time, setTime] = useState('');
 
-  const [subjectList, setSubjectList] = useState<ISubjectList[]>([]);
+  const [subjectList, setSubjectList] = useState<ISubjectItemView[]>([]);
 
   async function searchTeachers(e: FormEvent){
     e.preventDefault();
@@ -46,8 +49,8 @@ const TeacherList: React.FC = () => {
     if(data.subjects){
       const dataSubjects = data.subjects.map(subject => {
         return {
-          value: subject,
-          label: subject
+          value: subject.id_subject,
+          label: subject.ds_subject
         }
       })
 
