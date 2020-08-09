@@ -37,6 +37,17 @@
   width: 90%;
 }
 
+#page-teacher-list main .no-data{
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+#page-teacher-list main > p {
+  text-align: center;
+}
+
 @media(min-width: 700px){
   #page-teacher-list {
     max-width: 100%;
@@ -59,5 +70,10 @@
     padding: 3.2rem 0;
     max-width: 740px;
     margin: 0 auto;
+  }
+
+  #page-teacher-list main > p {
+    text-align: center;
+    margin-top: 5rem;
   }
 }

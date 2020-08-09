@@ -7,18 +7,7 @@ import Select from '../../components/Select';
 import api from '../../services/api';
 
 import './styles.css';
-
-interface ISubjectResponse {
-  subjects: [{
-    ds_subject: string,
-    id_subject: string
-  }]
-}
-
-interface ISubjectItemView{
-  value: string,
-  label: string
-}
+import SubjectsService, { ISubjectItemView } from '../../services/subjectsService';
 
 const TeacherList: React.FC = () => {
   const [teachers, setTeachers] = useState([])
@@ -44,18 +33,11 @@ const TeacherList: React.FC = () => {
   }
 
   async function populeSubjects(){
-    const { data } = await api.get<ISubjectResponse>('subjects')
+    const subjectService = new SubjectsService()
 
-    if(data.subjects){
-      const dataSubjects = data.subjects.map(subject => {
-        return {
-          value: subject.id_subject,
-          label: subject.ds_subject
-        }
-      })
+    const parsedSubject = await subjectService.getSubjectsParsedAsItemView();
 
-      setSubjectList(dataSubjects)
-    }
+    setSubjectList(parsedSubject)
   }
 
   useEffect(() => {
@@ -102,10 +84,13 @@ const TeacherList: React.FC = () => {
         </form>
       </PageHeader>
 
-      <main>
-        {teachers.map((teacher: ITeacher, index) => {
-          return <TeacherItem key={index} teacher={teacher}/>
-        })}
+      <main className={!teachers.length ? 'no-data' : ''}>
+        {teachers.length ? (
+          teachers.map((teacher: ITeacher, index) => {
+            return <TeacherItem key={index} teacher={teacher}/>
+          })) :
+          <p> Nenhum proffys encontrado. Que tal tentar com outros filtros? </p>
+        }
      </main>
     </div>
   );

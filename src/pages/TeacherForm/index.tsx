@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, FormEvent, useEffect } from 'react';
 import { useHistory } from 'react-router-dom'
 
 import warningIcon from '../../assets/images/icons/warning.svg'
@@ -8,12 +8,15 @@ import Input from '../../components/Input'
 import Textarea from '../../components/Textarea';
 import Select from '../../components/Select';
 
+import SubjectsService, { ISubjectItemView } from '../../services/subjectsService';
+import api from '../../services/api';
 
 import './styles.css'
-import api from '../../services/api';
 
 const TeacherForm: React.FC = () => {
   const history = useHistory()
+
+  const [subjectList, setSubjectList] = useState<ISubjectItemView[]>([]);
 
   const [name, setName] = useState('');
   const [avatar, setAvatar] = useState('');
@@ -27,6 +30,14 @@ const TeacherForm: React.FC = () => {
       { week_day: 0, from: '', to: '' },
     ]
   )
+
+  async function populeSubjects(){
+    const subjectService = new SubjectsService()
+
+    const parsedSubject = await subjectService.getSubjectsParsedAsItemView();
+
+    setSubjectList(parsedSubject)
+  }
 
   function HandleAddScheduleItem(){
     setScheduleItems(
@@ -70,6 +81,10 @@ const TeacherForm: React.FC = () => {
 
     setScheduleItems(newArray);
   }
+
+  useEffect(() => {
+    populeSubjects();
+  }, [])
 
   return (
     <div id="page-teacher-form" className="container">
@@ -117,11 +132,7 @@ const TeacherForm: React.FC = () => {
             <Select
               name="subject"
               label="Matéria"
-              options={[
-                { value: 'Artes', label: 'Artes' },
-                { value: 'Geografia', label: 'Geografia' },
-                { value: 'Matemática', label: 'Matemática' },
-              ]}
+              options={subjectList}
               value={subject}
               onChange={(e) => { setSubject(e.target.value) }}
             />
